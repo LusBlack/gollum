@@ -1,7 +1,9 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -10,20 +12,35 @@ import (
 var functions = template.FuncMap{}
 
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
+
+	tc, err := createTemplateCache()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	t, ok := tc[tmpl]
+	if !ok {
+		log.Fatal(err)
+	}
+
+	buf := new(bytes.Buffer)
+	_ = t.Execute(buf, nil)
+
 	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
-	err := parsedTemplate.Execute(w, nil)
+	err = parsedTemplate.Execute(w, nil)
 	if err != nil {
 		fmt.Println("Error parsing template", err)
 		return
 	}
 }
 
-func RenderTemplateTest(w http.ResponseWriter, tmpl string) error {
+// creates template cache as a map
+func createTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 
 	pages, err := filepath.Glob("./templates/*.page.tmpl")
 	if err != nil {
-		return err
+		return myCache, err
 	}
 
 	for _, page := range pages {
@@ -32,22 +49,22 @@ func RenderTemplateTest(w http.ResponseWriter, tmpl string) error {
 		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 
 		if err != nil {
-			return err
+			return myCache, err
 		}
 
 		matches, err := filepath.Glob("./templates/*.layout.tmpl")
 		if err != nil {
-			return err
+			return myCache, err
 		}
 
 		if len(matches) > 0 {
 			ts, err = ts.ParseGlob("./templates/*.layout.tmpl")
 			if err != nil {
-				return err
+				return myCache, err
 			}
 		}
 		myCache[name] = ts
 	}
 
-	return nil
+	return myCache, nil
 }
