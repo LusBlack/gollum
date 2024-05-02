@@ -7,35 +7,39 @@ import (
 	"net/http"
 	"path/filepath"
 	"text/template"
+
+	"github.com/LusBlack/gollum/pkg/config"
 )
 
 var functions = template.FuncMap{}
 
+var app *config.AppConfig
+
+// NewTemplates sets the config
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
+
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
-	tc, err := createTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
+	tc := app.TemplateCache
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("Could not get template")
 	}
 
 	buf := new(bytes.Buffer)
 	_ = t.Execute(buf, nil)
 
-	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
-	err = parsedTemplate.Execute(w, nil)
+	_, err := buf.WriteTo(w)
 	if err != nil {
-		fmt.Println("Error parsing template", err)
-		return
+		fmt.Println("Error writing template to browser", err)
 	}
 }
 
 // creates template cache as a map
-func createTemplateCache() (map[string]*template.Template, error) {
+func CreateTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 
 	pages, err := filepath.Glob("./templates/*.page.tmpl")
@@ -68,3 +72,12 @@ func createTemplateCache() (map[string]*template.Template, error) {
 
 	return myCache, nil
 }
+
+/*
+parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
+err = parsedTemplate.Execute(w, nil)
+if err != nil {
+	fmt.Println("Error parsing template", err)
+	return
+}
+*/

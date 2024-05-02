@@ -1,0 +1,3 @@
+0000000000000000000000000000000000000000 351b915c2872bc7c370eb1796181fce332d07679 Louis Ikwuegbu <Lou.ikwuegbu@gmail.com> 1714306416 +0100	commit (initial): refactoring directories and cleaning up
+351b915c2872bc7c370eb1796181fce332d07679 7181adbc07af4b07f3ee52a1b5afe68c4fc99016 Louis Ikwuegbu <Lou.ikwuegbu@gmail.com> 1714474697 +0100	commit: added file path for finding templates
+7181adbc07af4b07f3ee52a1b5afe68c4fc99016 11cbb45c8f45e6f2aa93758a64e185b106f72961 Louis Ikwuegbu <Lou.ikwuegbu@gmail.com> 1714599492 +0100	commit: added createTemplateCache and improved RenderTemplate func

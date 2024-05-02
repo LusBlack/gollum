@@ -15,6 +15,7 @@ func About(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "about.page.tmpl")
 
 }
+<<<<<<< HEAD
 
 // func RenderTemplateTest(w http.ResponseWriter, tmpl string) error {
 // 	myCache := map[string]*template.Template{}
@@ -30,3 +31,5 @@ func About(w http.ResponseWriter, r *http.Request) {
 // 		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 // 	}
 // }
+=======
+>>>>>>> 637c688 (fixing git issues after system crash)
