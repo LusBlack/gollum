@@ -2,8 +2,6 @@ package render
 
 import (
 	"bytes"
-	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -26,15 +24,20 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("Could not get template")
+		http.Error(w, "template not found", http.StatusInternalServerError)
+		return
 	}
 
+	// execute and save
 	buf := new(bytes.Buffer)
-	_ = t.Execute(buf, nil)
+	if err := t.Execute(buf, nil); err != nil {
+		http.Error(w, "Error executing template", http.StatusInternalServerError)
+	}
 
+	//write to browser
 	_, err := buf.WriteTo(w)
 	if err != nil {
-		fmt.Println("Error writing template to browser", err)
+		http.Error(w, "Error writing to browser", http.StatusInternalServerError)
 	}
 }
 
